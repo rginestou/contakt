@@ -1,0 +1,61 @@
+{{define "contact"}}
+<!DOCTYPE html>
+<html>
+{{template "head" .}}
+
+<body>
+  <main class="wrapper">
+    <section class="container">
+
+      <a class="button" href="/">Retour</a>
+
+      <div class="center">
+        <img class="avatar" src="static/avatar.png">
+      </div>
+
+      <div class="clearfix">
+        <div class="float-left">
+          <h1 class="title">{{.Name}}</h1>
+          <p class="description">{{.Job}}</p>
+        </div>
+        <div class="float-right">
+          <a class="button button-outline" href="edit?id={{.ID}}">Edit</a>
+        </div>
+      </div>
+
+      {{ if .Comment }}
+      <blockquote>
+        <p><em>{{.Comment}}</em></p>
+      </blockquote>
+      {{ end }}
+
+      <p>
+        {{ if .Address }}
+        {{.Address}}</br>
+        {{ end }}
+        {{ if .Email }}
+        {{.Email}}</br>
+        {{ end }}
+        {{ if .Phone }}
+        {{.Phone}}
+        {{ end }}
+      </p>
+
+      <table>
+        <tbody>
+          <tr>
+            <td>27</td>
+            <td>Stephen Curry</td>
+          </tr>
+          <tr>
+            <td>25</td>
+            <td>Klay Thompson</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+
+</html>
+{{end}}

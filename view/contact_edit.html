@@ -1,0 +1,55 @@
+{{define "contact"}}
+<!DOCTYPE html>
+<html>
+{{template "head" .}}
+
+<body>
+  <main class="wrapper">
+    <section class="container">
+
+      <a class="button" href="/contact?id={{.ID}}">Retour</a>
+
+      <div class="center">
+        <img class="avatar" src="static/avatar.png">
+      </div>
+
+      <form action="contact?id={{.ID}}" method="POST">
+        <fieldset>
+          <div class="row">
+            <div class="column">
+              <label for="nameField">Nom</label>
+              <input name="name" required placeholder="Nom" id="nameField" value="{{.Name}}">
+            </div>
+            <div class="column">
+              <label for="nameField">Métier</label>
+              <input name="job" placeholder="Métier" id="jobField" value="{{.Job}}">
+            </div>
+          </div>
+
+          <label for="nameField">Adresse</label>
+          <input name="address" placeholder="Adresse" id="addressField" value="{{.Address}}">
+
+          <div class="row">
+            <div class="column">
+              <label for="nameField">E-mail</label>
+              <input name="email" placeholder="E-mail" id="emailField" value="{{.Email}}">
+            </div>
+            <div class="column">
+              <label for="nameField">Téléphone</label>
+              <input name="phone" placeholder="Téléphone" id="phoneField" value="{{.Phone}}">
+            </div>
+          </div>
+
+          <label for="commentField">Commentaire</label>
+          <textarea name="comment" placeholder="Hi CJ …" id="commentField"></textarea>
+
+          <input class="button-primary" type="submit" value="Valider">
+        </fieldset>
+      </form>
+    </section>
+
+  </main>
+</body>
+
+</html>
+{{end}}
