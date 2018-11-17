@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -24,6 +25,16 @@ type Contact struct {
 // ToID ...
 func (c Contact) ToID() string {
 	return c.ID.Hex()
+}
+
+// Avatar profile picture
+func (c Contact) Avatar() string {
+	avatar := "static/avatar.png"
+	if _, err := os.Stat("data/" + c.ID.Hex() + ".png"); !os.IsNotExist(err) {
+		avatar = "data/" + c.ID.Hex() + ".png"
+	}
+
+	return avatar
 }
 
 var db *mgo.Database

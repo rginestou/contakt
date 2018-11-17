@@ -2,7 +2,10 @@ package main
 
 import (
 	"html/template"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -19,31 +22,48 @@ type indexData struct {
 	Contacts []Contact
 }
 
-func contactHandler(w http.ResponseWriter, r *http.Request) {
+func contactPOST(w http.ResponseWriter, r *http.Request) {
 	id := bson.NewObjectId()
-
 	ids, ok := r.URL.Query()["id"]
 	if ok && bson.IsObjectIdHex(ids[0]) {
 		id = bson.ObjectIdHex(ids[0])
 	}
 
-	if r.Method == "POST" {
-		r.ParseForm()
+	r.ParseMultipartForm(32 << 20)
 
-		var contact Contact
-		contact.ID = id
-		contact.Name = r.PostForm["name"][0]
-		contact.Job = r.PostForm["job"][0]
-		contact.Address = r.PostForm["address"][0]
-		contact.Email = r.PostForm["email"][0]
-		contact.Phone = r.PostForm["phone"][0]
-		contact.Comment = r.PostForm["comment"][0]
-		contact.CreatedAt = time.Now()
+	var contact Contact
+	contact.ID = id
+	contact.Name = r.FormValue("name")
+	contact.Job = r.FormValue("job")
+	contact.Address = r.FormValue("address")
+	contact.Email = r.FormValue("email")
+	contact.Phone = r.FormValue("phone")
+	contact.Comment = r.FormValue("comment")
+	contact.CreatedAt = time.Now()
 
-		updateContact(contact)
+	updateContact(contact)
 
-		http.Redirect(w, r, "/contact?id="+contact.ID.Hex(), http.StatusSeeOther)
+	// Contact picture
+	file, handler, err := r.FormFile("avatar")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+	defer file.Close()
+
+	f, _ := os.OpenFile("data/"+id.Hex()+filepath.Ext(handler.Filename), os.O_WRONLY|os.O_CREATE, 0666)
+	defer f.Close()
+	io.Copy(f, file)
+
+	http.Redirect(w, r, "/contact?id="+contact.ID.Hex(), http.StatusSeeOther)
+}
+
+func contactGET(w http.ResponseWriter, r *http.Request) {
+	id := bson.NewObjectId()
+
+	ids, ok := r.URL.Query()["id"]
+	if ok && bson.IsObjectIdHex(ids[0]) {
+		id = bson.ObjectIdHex(ids[0])
 	}
 
 	// Get contact

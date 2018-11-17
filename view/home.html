@@ -24,7 +24,7 @@
         <tbody>
           {{ range .Contacts }}
           <tr>
-            <td><img class="avatar-small" src="static/avatar.png"></td>
+            <td><img class="avatar-small" src="{{.Avatar}}"></td>
             <td><strong><a href="contact?id={{ .ToID }}">{{.Name}}</a></strong></td>
             <td>{{ .Job }}</td>
           </tr>

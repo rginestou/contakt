@@ -24,9 +24,12 @@ func router() *mux.Router {
 	// Static files
 	fs := http.FileServer(http.Dir("static"))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
+	fs = http.FileServer(http.Dir("data"))
+	r.PathPrefix("/data/").Handler(http.StripPrefix("/data/", fs))
 
 	// Routes
-	r.HandleFunc("/contact", contactHandler)
+	r.HandleFunc("/contact", contactGET).Methods("GET")
+	r.HandleFunc("/contact", contactPOST).Methods("POST")
 	r.HandleFunc("/edit", editContactGET).Methods("GET")
 	r.HandleFunc("/new", newContactGET).Methods("GET")
 	r.HandleFunc("/delete", deleteContactPOST).Methods("POST")

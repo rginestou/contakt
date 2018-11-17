@@ -9,17 +9,14 @@
 
       <a class="button" href="/contact?id={{.ID}}">Retour</a>
 
-      <div class="center">
-        <img class="avatar" src="static/avatar.png">
-      </div>
+      <form action="contact?id={{.ID}}" enctype="multipart/form-data" method="POST">
+        <div class="center">
+          <img class="avatar" src="{{.Avatar}}">
 
-      <div class="clearfix">
-        <div class="float-right">
-          <button class="button-outline" id="delete-button">Supprimer</button>
+          <label for="avatar">Image du contact</label>
+          <input type="file" id="avatar" name="avatar" accept="image/png">
         </div>
-      </div>
 
-      <form action="contact?id={{.ID}}" method="POST">
         <fieldset>
           <div class="row">
             <div class="column">
@@ -49,7 +46,14 @@
           <label for="commentField">Commentaire</label>
           <textarea name="comment" placeholder="Hi CJ …" id="commentField"></textarea>
 
-          <input class="button-primary" type="submit" value="Valider">
+          <div class="clearfix">
+            <div class="float-left">
+              <input class="button-primary" type="submit" value="Valider">
+            </div>
+            <div class="float-right">
+              <button class="button-outline" id="delete-button">Supprimer</button>
+            </div>
+          </div>
         </fieldset>
       </form>
     </section>
