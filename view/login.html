@@ -1,0 +1,22 @@
+{{define "login"}}
+<!DOCTYPE html>
+<html>
+{{template "head" .}}
+
+<body>
+  <main class="wrapper">
+    <section class="container">
+
+      <h1 class="title">Contacts</h1>
+
+      <form method="POST">
+          <input name="login" placeholder="Login">
+          <input name="password" placeholder="Password"1 type="password">
+          <input class="button-primary" type="submit" value="Se connecter">
+      </form>
+    </section>
+  </main>
+</body>
+
+</html>
+{{end}}

@@ -45,7 +45,7 @@ func contactGET(w http.ResponseWriter, r *http.Request) {
 
 	tmpl.ExecuteTemplate(w, "contact", contactData{
 		Contact: contact,
-		Title:   "Contakt",
+		Title:   "Contakt • " + contact.Name,
 		ID:      id.Hex(),
 	})
 }
@@ -112,7 +112,7 @@ func editContactGET(w http.ResponseWriter, r *http.Request) {
 
 	tmpl.ExecuteTemplate(w, "contact", contactData{
 		Contact: contact,
-		Title:   "Contakt • Editer",
+		Title:   "Contakt • " + contact.Name + " (edition)",
 		ID:      id.Hex(),
 	})
 }

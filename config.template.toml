@@ -1,4 +1,6 @@
 port = 8080
-secret = "SECRET"
 dbserver = "localhost"
 dbname = "contakt"
+key = "key"
+login = "login"
+password = "password"
