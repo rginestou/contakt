@@ -1,2 +1,2 @@
 all:
-	go build -o build/contakt app.go controller.go db.go
+	go build -o build/contakt app.go controller.go db.go auth.go
