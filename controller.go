@@ -18,14 +18,43 @@ type contactData struct {
 
 type indexData struct {
 	Title    string
+	Filter   string
 	Contacts []Contact
+}
+
+func contactGET(w http.ResponseWriter, r *http.Request) {
+	ids := r.URL.Query().Get("id")
+	if ids == "" || !bson.IsObjectIdHex(ids) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	id := bson.ObjectIdHex(ids)
+
+	// Get contact
+	contact, err := getContactByID(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Load templates
+	tmpl, _ := template.ParseFiles(
+		"view/contact.html",
+		"view/head.html",
+	)
+
+	tmpl.ExecuteTemplate(w, "contact", contactData{
+		Contact: contact,
+		Title:   "Contakt",
+		ID:      id.Hex(),
+	})
 }
 
 func contactPOST(w http.ResponseWriter, r *http.Request) {
 	id := bson.NewObjectId()
-	ids, ok := r.URL.Query()["id"]
-	if ok && bson.IsObjectIdHex(ids[0]) {
-		id = bson.ObjectIdHex(ids[0])
+	ids := r.URL.Query().Get("id")
+	if ids != "" && bson.IsObjectIdHex(ids) {
+		id = bson.ObjectIdHex(ids)
 	}
 
 	r.ParseMultipartForm(32 << 20)
@@ -60,41 +89,13 @@ func contactPOST(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/contact?id="+contact.ID.Hex(), http.StatusSeeOther)
 }
 
-func contactGET(w http.ResponseWriter, r *http.Request) {
-	id := bson.NewObjectId()
-
-	ids, ok := r.URL.Query()["id"]
-	if ok && bson.IsObjectIdHex(ids[0]) {
-		id = bson.ObjectIdHex(ids[0])
-	}
-
-	// Get contact
-	contact, err := getContactByID(id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// Load templates
-	tmpl, _ := template.ParseFiles(
-		"view/contact.html",
-		"view/head.html",
-	)
-
-	tmpl.ExecuteTemplate(w, "contact", contactData{
-		Contact: contact,
-		Title:   "Contakt",
-		ID:      id.Hex(),
-	})
-}
-
 func editContactGET(w http.ResponseWriter, r *http.Request) {
-	ids, ok := r.URL.Query()["id"]
-	if !ok || len(ids[0]) < 1 {
-		http.Error(w, "No contact id provided", http.StatusBadRequest)
+	ids := r.URL.Query().Get("id")
+	if ids == "" || !bson.IsObjectIdHex(ids) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	id := bson.ObjectIdHex(ids[0])
+	id := bson.ObjectIdHex(ids)
 
 	// Get contact
 	contact, err := getContactByID(id)
@@ -129,12 +130,12 @@ func newContactGET(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteContactPOST(w http.ResponseWriter, r *http.Request) {
-	ids, ok := r.URL.Query()["id"]
-	if !ok || len(ids[0]) < 1 {
-		http.Error(w, "No contact id provided", http.StatusBadRequest)
+	ids := r.URL.Query().Get("id")
+	if ids == "" || !bson.IsObjectIdHex(ids) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	id := bson.ObjectIdHex(ids[0])
+	id := bson.ObjectIdHex(ids)
 
 	if err := deleteContactByID(id); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -145,6 +146,8 @@ func deleteContactPOST(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexGET(w http.ResponseWriter, r *http.Request) {
+	filter := r.URL.Query().Get("filter")
+
 	// Load templates
 	tmpl, _ := template.ParseFiles(
 		"view/home.html",
@@ -152,10 +155,11 @@ func indexGET(w http.ResponseWriter, r *http.Request) {
 	)
 
 	// Get contacts
-	contacts, _ := getAllContacts()
+	contacts, _ := getAllContacts(filter)
 
 	tmpl.ExecuteTemplate(w, "home", indexData{
 		Title:    "Contakt",
+		Filter:   filter,
 		Contacts: contacts,
 	})
 }

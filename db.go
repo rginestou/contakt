@@ -49,9 +49,13 @@ func connect(server, database string) {
 	db = session.DB(database)
 }
 
-func getAllContacts() ([]Contact, error) {
+func getAllContacts(filter string) ([]Contact, error) {
 	var resp []Contact
-	err := db.C("contacts").Find(bson.M{}).All(&resp)
+	err := db.C("contacts").Find(bson.M{"$or": []bson.M{
+		bson.M{"name": bson.M{"$regex": bson.RegEx{Pattern: "(?i).*" + filter + ".*", Options: "i"}}},
+		bson.M{"job": bson.M{"$regex": bson.RegEx{Pattern: "(?i).*" + filter + ".*", Options: "i"}}},
+		bson.M{"comment": bson.M{"$regex": bson.RegEx{Pattern: "(?i).*" + filter + ".*", Options: "i"}}},
+	}}).All(&resp)
 
 	return resp, err
 }

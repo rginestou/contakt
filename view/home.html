@@ -10,6 +10,11 @@
       <h1 class="title">Contacts</h1>
 
       <div class="clearfix">
+        <div class="float-left">
+          <form action="?filter=" method="GET">
+            <input name="filter" placeholder="Filtrer" id="filterField" value="{{.Filter}}">
+          </form>
+        </div>
         <div class="float-right">
           <a class="button button-outline" href="new">Nouveau</a>
         </div>
