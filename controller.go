@@ -2,17 +2,21 @@ package main
 
 import (
 	"html/template"
-	"log"
 	"net/http"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
 )
 
-type indexData struct {
+type contactData struct {
 	Contact
 	Title string
 	ID    string
+}
+
+type indexData struct {
+	Title    string
+	Contacts []Contact
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +59,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 		"view/head.html",
 	)
 
-	tmpl.ExecuteTemplate(w, "contact", indexData{
+	tmpl.ExecuteTemplate(w, "contact", contactData{
 		Contact: contact,
 		Title:   "Contakt",
 		ID:      id.Hex(),
@@ -83,7 +87,7 @@ func editContactGET(w http.ResponseWriter, r *http.Request) {
 		"view/head.html",
 	)
 
-	tmpl.ExecuteTemplate(w, "contact", indexData{
+	tmpl.ExecuteTemplate(w, "contact", contactData{
 		Contact: contact,
 		Title:   "Contakt • Editer",
 		ID:      id.Hex(),
@@ -97,24 +101,39 @@ func newContactGET(w http.ResponseWriter, r *http.Request) {
 		"view/head.html",
 	)
 
-	tmpl.ExecuteTemplate(w, "contact", indexData{
+	tmpl.ExecuteTemplate(w, "contact", contactData{
 		Title: "Contakt • Nouveau",
 	})
 }
 
-func indexGET(w http.ResponseWriter, r *http.Request) {
-	// Load templates
-	tmpl, err := template.ParseFiles(
-		"view/home.html",
-		"view/head.html",
-	)
-	if err != nil {
-		log.Println(err)
-		// pageNotFoundHandler(w, r)
+func deleteContactPOST(w http.ResponseWriter, r *http.Request) {
+	ids, ok := r.URL.Query()["id"]
+	if !ok || len(ids[0]) < 1 {
+		http.Error(w, "No contact id provided", http.StatusBadRequest)
+		return
+	}
+	id := bson.ObjectIdHex(ids[0])
+
+	if err := deleteContactByID(id); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func indexGET(w http.ResponseWriter, r *http.Request) {
+	// Load templates
+	tmpl, _ := template.ParseFiles(
+		"view/home.html",
+		"view/head.html",
+	)
+
+	// Get contacts
+	contacts, _ := getAllContacts()
+
 	tmpl.ExecuteTemplate(w, "home", indexData{
-		Title: "Contakt",
+		Title:    "Contakt",
+		Contacts: contacts,
 	})
 }

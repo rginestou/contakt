@@ -29,6 +29,7 @@ func router() *mux.Router {
 	r.HandleFunc("/contact", contactHandler)
 	r.HandleFunc("/edit", editContactGET).Methods("GET")
 	r.HandleFunc("/new", newContactGET).Methods("GET")
+	r.HandleFunc("/delete", deleteContactPOST).Methods("POST")
 	r.HandleFunc("/", indexGET).Methods("GET")
 
 	return r

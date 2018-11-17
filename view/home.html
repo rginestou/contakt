@@ -6,8 +6,8 @@
 <body>
   <main class="wrapper">
     <section class="container">
-      
-      <h1 class="title">Contakt</h1>
+
+      <h1 class="title">Contacts</h1>
 
       <div class="clearfix">
         <div class="float-right">
@@ -16,15 +16,19 @@
       </div>
 
       <table>
+        <colgroup>
+          <col style="width:10%">
+          <col style="width:50%">
+          <col style="width:40%">
+        </colgroup>
         <tbody>
+          {{ range .Contacts }}
           <tr>
-            <td>27</td>
-            <td>Stephen Curry</td>
+            <td><img class="avatar-small" src="static/avatar.png"></td>
+            <td><strong><a href="contact?id={{ .ToID }}">{{.Name}}</a></strong></td>
+            <td>{{ .Job }}</td>
           </tr>
-          <tr>
-            <td>25</td>
-            <td>Klay Thompson</td>
-          </tr>
+          {{ end }}
         </tbody>
       </table>
     </section>

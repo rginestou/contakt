@@ -21,6 +21,11 @@ type Contact struct {
 	CreatedAt time.Time     `bson:"created_at" json:"created_at"`
 }
 
+// ToID ...
+func (c Contact) ToID() string {
+	return c.ID.Hex()
+}
+
 var db *mgo.Database
 
 // Connect to the database
@@ -31,6 +36,13 @@ func connect(server, database string) {
 	}
 
 	db = session.DB(database)
+}
+
+func getAllContacts() ([]Contact, error) {
+	var resp []Contact
+	err := db.C("contacts").Find(bson.M{}).All(&resp)
+
+	return resp, err
 }
 
 func getContactByID(ID bson.ObjectId) (Contact, error) {
@@ -44,4 +56,8 @@ func updateContact(contact Contact) error {
 	_, err := db.C("contacts").Upsert(bson.M{"_id": contact.ID}, contact)
 
 	return err
+}
+
+func deleteContactByID(ID bson.ObjectId) error {
+	return db.C("contacts").RemoveId(ID)
 }
