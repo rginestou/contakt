@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path/filepath"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -43,17 +42,20 @@ func contactPOST(w http.ResponseWriter, r *http.Request) {
 
 	updateContact(contact)
 
-	// Contact picture
-	file, handler, err := r.FormFile("avatar")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	// Delete contact picture
+	if r.FormValue("delete-avatar") == "on" {
+		os.Remove("data/" + id.Hex() + ".png")
 	}
-	defer file.Close()
 
-	f, _ := os.OpenFile("data/"+id.Hex()+filepath.Ext(handler.Filename), os.O_WRONLY|os.O_CREATE, 0666)
-	defer f.Close()
-	io.Copy(f, file)
+	// Contact picture
+	file, _, err := r.FormFile("avatar")
+	if err == nil {
+		f, _ := os.OpenFile("data/"+id.Hex()+".png", os.O_WRONLY|os.O_CREATE, 0666)
+		io.Copy(f, file)
+
+		f.Close()
+		file.Close()
+	}
 
 	http.Redirect(w, r, "/contact?id="+contact.ID.Hex(), http.StatusSeeOther)
 }
