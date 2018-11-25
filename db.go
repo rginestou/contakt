@@ -55,7 +55,7 @@ func getAllContacts(filter string) ([]Contact, error) {
 		bson.M{"name": bson.M{"$regex": bson.RegEx{Pattern: "(?i).*" + filter + ".*", Options: "i"}}},
 		bson.M{"job": bson.M{"$regex": bson.RegEx{Pattern: "(?i).*" + filter + ".*", Options: "i"}}},
 		bson.M{"comment": bson.M{"$regex": bson.RegEx{Pattern: "(?i).*" + filter + ".*", Options: "i"}}},
-	}}).All(&resp)
+	}}).Sort("name").All(&resp)
 
 	return resp, err
 }

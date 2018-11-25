@@ -1,4 +1,5 @@
 gomon_*
+.gomon
 config.toml
 data/*
 build
